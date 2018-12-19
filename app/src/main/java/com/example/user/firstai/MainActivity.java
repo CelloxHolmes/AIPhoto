@@ -37,9 +37,10 @@ import com.microsoft.projectoxford.face.contract.*;
 
 public class MainActivity extends AppCompatActivity {
 
+  static String age ="";
     //
     ImageView imageView;
-    String age = "";
+//    String age = "";
     //
 //
 //    @Override
@@ -193,7 +194,7 @@ public class MainActivity extends AppCompatActivity {
 //                        intent, "Select Picture"), PICK_IMAGE);
 
                 dispatchTakePictureIntent();
-
+               
             }
         });
 
@@ -222,16 +223,19 @@ public class MainActivity extends AppCompatActivity {
 
                 // Comment out for tutorial
                 detectAndFrame(bitmap);
-                Button button2 = findViewById(R.id.button2);
-                button2.setText(age);
 
-                MainActivity m = new MainActivity();
+
+
             } catch (IOException e) {
                 System.out.println("picture failed");
                 e.printStackTrace();
             }
         } else System.out.println("picture not pass the check");
 
+//        System.out.println("How old are u?");
+//
+//        Button button2 = findViewById(R.id.button2);
+//        button2.setText(age);
     }
 
     // Replace `<API endpoint>` with the Azure region associated with
@@ -274,6 +278,8 @@ public class MainActivity extends AppCompatActivity {
                                     FaceServiceClient.FaceAttributeType.Gender }
 
                             );
+//                            System.out.println(result[0].faceAttributes.age);
+//                            age = String.valueOf(result[0].faceAttributes.age);
                             if (result == null) {
                                 publishProgress(
                                         "Detection Finished. Nothing detected");
@@ -282,9 +288,7 @@ public class MainActivity extends AppCompatActivity {
                             publishProgress(String.format(
                                     "Detection Finished. %d face(s) detected",
                                     result.length));
-                            System.out.println("How old are u?");
-                            System.out.println(result[0].faceAttributes.age);
-                             age = String.valueOf(result[0].faceAttributes.age);
+
 
 
                             return result;
@@ -343,10 +347,21 @@ public class MainActivity extends AppCompatActivity {
         Bitmap bitmap = originalBitmap.copy(Bitmap.Config.ARGB_8888, true);
         Canvas canvas = new Canvas(bitmap);
         Paint paint = new Paint();
+        Paint paint2 = new Paint();
         paint.setAntiAlias(true);
         paint.setStyle(Paint.Style.STROKE);
         paint.setColor(Color.RED);
         paint.setStrokeWidth(10);
+
+        paint2.setAntiAlias(true);
+        paint2.setStyle(Paint.Style.STROKE);
+        paint2.setColor(Color.GREEN);
+        paint2.setStrokeWidth(20);
+        paint2.setTextSize(250f);
+
+//        age = String.valueOf(faces[0].faceAttributes.age);
+        int i = 0;
+
         if (faces != null) {
             for (Face face : faces) {
                 FaceRectangle faceRectangle = face.faceRectangle;
@@ -356,6 +371,9 @@ public class MainActivity extends AppCompatActivity {
                         faceRectangle.left + faceRectangle.width,
                         faceRectangle.top + faceRectangle.height,
                         paint);
+                canvas.drawText(String.valueOf(faces[i].faceAttributes.age),faceRectangle.left, faceRectangle.top, paint2);
+
+                i = i+1;
             }
         }
         return bitmap;

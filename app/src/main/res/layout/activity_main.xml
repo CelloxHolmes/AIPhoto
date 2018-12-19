@@ -47,14 +47,9 @@
     <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Browse for a face image"
+            android:text="take a photo to calculate the age"
             android:id="@+id/button1"
             android:layout_alignParentBottom="true"/>
-    <Button
-            android:text="Age"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" android:layout_alignParentBottom="true"
-            android:layout_marginBottom="84dp" android:layout_centerHorizontal="true" android:id="@+id/button2"/>
 
 
 </RelativeLayout>
