@@ -1,35 +1,60 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:layout_height="match_parent"
-              android:layout_width="match_parent"
-              android:orientation="vertical"
-              android:paddingBottom="16dp"
-              android:paddingLeft="16dp"
-              android:paddingRight="16dp"
-              android:paddingTop="16dp"
-              android:weightSum="10"
-              tools:context=".MainActivity"
+<!--<?xml version="1.0" encoding="utf-8"?>-->
+<!--<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+              <!--xmlns:tools="http://schemas.android.com/tools"-->
+              <!--android:layout_height="match_parent"-->
+              <!--android:layout_width="match_parent"-->
+              <!--android:orientation="vertical"-->
+              <!--android:paddingBottom="16dp"-->
+              <!--android:paddingLeft="16dp"-->
+              <!--android:paddingRight="16dp"-->
+              <!--android:paddingTop="16dp"-->
+              <!--android:weightSum="10"-->
+              <!--tools:context=".MainActivity"-->
 
-             >
+             <!--&gt;-->
 
+
+    <!--<ImageView-->
+            <!--android:id="@+id/imageView"-->
+            <!--android:layout_height="fill_parent"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_weight="9"-->
+    <!--/>-->
+
+
+    <!--<Button-->
+            <!--android:id="@+id/btnCamera"-->
+            <!--android:layout_weight="1"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:background="@android:color/holo_red_dark"-->
+            <!--android:textColor="@android:color/darker_gray"-->
+            <!--android:text="OPEN CAMERA"-->
+    <!--/>-->
+
+<!--</LinearLayout>-->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:tools="http://schemas.android.com/tools" tools:context=".MainActivity"
+                android:layout_width="match_parent" android:layout_height="match_parent">
 
     <ImageView
-            android:id="@+id/imageView"
-            android:layout_height="fill_parent"
             android:layout_width="match_parent"
-            android:layout_weight="9"
-    />
-
+            android:layout_height="fill_parent"
+            android:id="@+id/imageView1"
+            android:layout_above="@+id/button1"
+            android:contentDescription="Image with faces to analyze"/>
 
     <Button
-            android:id="@+id/btnCamera"
-            android:layout_weight="1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@android:color/holo_red_dark"
-            android:textColor="@android:color/darker_gray"
-            android:text="OPEN CAMERA"
-    />
+            android:text="Browse for a face image"
+            android:id="@+id/button1"
+            android:layout_alignParentBottom="true"/>
+    <Button
+            android:text="Age"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:layout_alignParentBottom="true"
+            android:layout_marginBottom="84dp" android:layout_centerHorizontal="true" android:id="@+id/button2"/>
 
-</LinearLayout>
+
+</RelativeLayout>
