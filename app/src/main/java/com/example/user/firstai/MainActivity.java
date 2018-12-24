@@ -37,10 +37,10 @@ import com.microsoft.projectoxford.face.contract.*;
 
 public class MainActivity extends AppCompatActivity {
 
-  static String age ="";
+    static String age = "";
     //
     ImageView imageView;
-//    String age = "";
+    //    String age = "";
     //
 //
 //    @Override
@@ -131,7 +131,7 @@ public class MainActivity extends AppCompatActivity {
                         photoFile);
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                 System.out.println(photoURI);
-                startActivityForResult(takePictureIntent, 1);
+                startActivityForResult(takePictureIntent, 2);
 //                    galleryAddPic();
 //                    setPic();
 
@@ -183,9 +183,23 @@ public class MainActivity extends AppCompatActivity {
 //        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         Button button1 = findViewById(R.id.button1);
+        Button button2 = findViewById(R.id.button2);
         imageView = findViewById(R.id.imageView1);
 
         button1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                intent.setType("image/*");
+                startActivityForResult(Intent.createChooser(
+                        intent, "Select Picture"), PICK_IMAGE);
+
+//                dispatchTakePictureIntent();
+
+            }
+        });
+
+        button2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 //                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
@@ -194,7 +208,7 @@ public class MainActivity extends AppCompatActivity {
 //                        intent, "Select Picture"), PICK_IMAGE);
 
                 dispatchTakePictureIntent();
-               
+
             }
         });
 
@@ -209,9 +223,39 @@ public class MainActivity extends AppCompatActivity {
         System.out.println(data);
 
         if (requestCode == 1 && resultCode == RESULT_OK) {
+            Uri uri = data.getData();
+            try {
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(
+                        getContentResolver(), uri);
+//                        getContentResolver(), photoURI);
+                ImageView imageView = findViewById(R.id.imageView1);
+//                Button button2 = findViewById(R.id.button2);
+                imageView.setImageBitmap(bitmap);
+//                setPic();
+//                imageView.animate().rotation(-90).start();
+
+                System.out.println("picture pass");
+
+//                Matrix matrix = new Matrix();
+//                matrix.postRotate(-90);
+//                bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+
+                // Comment out for tutorial
+                detectAndFrame(bitmap);
+
+
+            } catch (IOException e) {
+                System.out.println("picture failed");
+                e.printStackTrace();
+            }
+        }
+        else System.out.println("picture not pass the check");
+
+        if (requestCode == 2 && resultCode == RESULT_OK) {
 //            Uri uri = data.getData();
             try {
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(
+//                        getContentResolver(), uri);
                         getContentResolver(), photoURI);
                 ImageView imageView = findViewById(R.id.imageView1);
 //                Button button2 = findViewById(R.id.button2);
@@ -221,16 +265,19 @@ public class MainActivity extends AppCompatActivity {
 
                 System.out.println("picture pass");
 
+                Matrix matrix = new Matrix();
+                matrix.postRotate(-90);
+                bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+
                 // Comment out for tutorial
                 detectAndFrame(bitmap);
-
 
 
             } catch (IOException e) {
                 System.out.println("picture failed");
                 e.printStackTrace();
             }
-        } else System.out.println("picture not pass the check");
+        }
 
 //        System.out.println("How old are u?");
 //
@@ -263,7 +310,6 @@ public class MainActivity extends AppCompatActivity {
                     String exceptionMessage = "";
 
 
-
                     @Override
                     protected Face[] doInBackground(InputStream... params) {
                         try {
@@ -273,22 +319,41 @@ public class MainActivity extends AppCompatActivity {
                                     true,         // returnFaceId
                                     false,        // returnFaceLandmarks
 //                                    null          // returnFaceAttributes:
-                                 new FaceServiceClient.FaceAttributeType[] {
-                                    FaceServiceClient.FaceAttributeType.Age,
-                                    FaceServiceClient.FaceAttributeType.Gender }
+                                    new FaceServiceClient.FaceAttributeType[]{
+                                            FaceServiceClient.FaceAttributeType.Age,
+                                            FaceServiceClient.FaceAttributeType.Emotion,
+                                            FaceServiceClient.FaceAttributeType.Gender}
 
                             );
-//                            System.out.println(result[0].faceAttributes.age);
+                            System.out.println(result[0].faceAttributes.age);
+                            System.out.println(result[0].faceAttributes.gender);
+                            System.out.print("anger : ");
+                            System.out.println(result[0].faceAttributes.emotion.anger);
+                            System.out.print("contempt : ");
+                            System.out.println(result[0].faceAttributes.emotion.contempt);
+                            System.out.print("disgust : ");
+                            System.out.println(result[0].faceAttributes.emotion.disgust);
+                            System.out.print("fear : ");
+                            System.out.println(result[0].faceAttributes.emotion.fear);
+                            System.out.print("happiness : ");
+                            System.out.println(result[0].faceAttributes.emotion.happiness);
+                            System.out.print("neutral : ");
+                            System.out.println(result[0].faceAttributes.emotion.neutral);
+                            System.out.print("sadness : ");
+                            System.out.println(result[0].faceAttributes.emotion.sadness);
+                            System.out.print("surprise : ");
+                            System.out.println(result[0].faceAttributes.emotion.surprise);
 //                            age = String.valueOf(result[0].faceAttributes.age);
                             if (result == null) {
                                 publishProgress(
                                         "Detection Finished. Nothing detected");
                                 return null;
                             }
+//                            System.out.println(result.length);
+
                             publishProgress(String.format(
                                     "Detection Finished. %d face(s) detected",
                                     result.length));
-
 
 
                             return result;
@@ -322,8 +387,8 @@ public class MainActivity extends AppCompatActivity {
                         if (result == null) return;
 
                         ImageView imageView = findViewById(R.id.imageView1);
-                        imageView.setImageBitmap(
-                                drawFaceRectanglesOnBitmap(imageBitmap, result));
+                        Bitmap bitmap = drawFaceRectanglesOnBitmap(imageBitmap, result);
+                        imageView.setImageBitmap(bitmap);
                         imageBitmap.recycle();
                     }
                 };
@@ -348,21 +413,30 @@ public class MainActivity extends AppCompatActivity {
         Canvas canvas = new Canvas(bitmap);
         Paint paint = new Paint();
         Paint paint2 = new Paint();
+        Paint paint3 = new Paint();
         paint.setAntiAlias(true);
         paint.setStyle(Paint.Style.STROKE);
         paint.setColor(Color.RED);
         paint.setStrokeWidth(10);
 
         paint2.setAntiAlias(true);
-        paint2.setStyle(Paint.Style.STROKE);
+        paint2.setStyle(Paint.Style.FILL);
         paint2.setColor(Color.GREEN);
-        paint2.setStrokeWidth(20);
-        paint2.setTextSize(250f);
+        paint2.setStrokeWidth(2);
+        paint2.setTextSize(50f);
+
+        paint3.setAntiAlias(true);
+        paint3.setStyle(Paint.Style.FILL);
+        paint3.setColor(Color.GREEN);
+        paint3.setStrokeWidth(3);
+        paint3.setTextSize(50f);
+
 
 //        age = String.valueOf(faces[0].faceAttributes.age);
         int i = 0;
 
-        if (faces != null) {
+        if (faces != null && faces.length != 0) {
+
             for (Face face : faces) {
                 FaceRectangle faceRectangle = face.faceRectangle;
                 canvas.drawRect(
@@ -371,12 +445,69 @@ public class MainActivity extends AppCompatActivity {
                         faceRectangle.left + faceRectangle.width,
                         faceRectangle.top + faceRectangle.height,
                         paint);
-                canvas.drawText(String.valueOf(faces[i].faceAttributes.age),faceRectangle.left, faceRectangle.top, paint2);
+                canvas.drawText(String.valueOf(faces[i].faceAttributes.age), faceRectangle.left, faceRectangle.top, paint2);
 
-                i = i+1;
+                double biggest;
+                biggest = Math.max(face.faceAttributes.emotion.anger, face.faceAttributes.emotion.contempt);
+                biggest = Math.max(biggest, face.faceAttributes.emotion.disgust);
+                biggest = Math.max(biggest, face.faceAttributes.emotion.fear);
+                biggest = Math.max(biggest, face.faceAttributes.emotion.happiness);
+                biggest = Math.max(biggest, face.faceAttributes.emotion.neutral);
+                biggest = Math.max(biggest, face.faceAttributes.emotion.sadness);
+                biggest = Math.max(biggest, face.faceAttributes.emotion.surprise);
+
+                if (biggest == face.faceAttributes.emotion.anger) {
+                    canvas.drawText("anger", faceRectangle.left, faceRectangle.top + faceRectangle.height, paint3);
+                }
+                if (biggest == face.faceAttributes.emotion.contempt) {
+                    canvas.drawText("contempt", faceRectangle.left, faceRectangle.top + faceRectangle.height, paint3);
+                }
+                if (biggest == face.faceAttributes.emotion.disgust) {
+                    canvas.drawText("disgust", faceRectangle.left, faceRectangle.top + faceRectangle.height, paint3);
+                }
+                if (biggest == face.faceAttributes.emotion.fear) {
+                    canvas.drawText("fear", faceRectangle.left, faceRectangle.top + faceRectangle.height, paint3);
+                }
+                if (biggest == face.faceAttributes.emotion.happiness) {
+                    canvas.drawText("happiness", faceRectangle.left, faceRectangle.top + faceRectangle.height, paint3);
+                }
+                if (biggest == face.faceAttributes.emotion.neutral) {
+                    canvas.drawText("neutral", faceRectangle.left, faceRectangle.top + faceRectangle.height, paint3);
+                }
+                if (biggest == face.faceAttributes.emotion.sadness) {
+                    canvas.drawText("sadness", faceRectangle.left, faceRectangle.top + faceRectangle.height, paint3);
+                }
+                if (biggest == face.faceAttributes.emotion.surprise) {
+                    canvas.drawText("surprise", faceRectangle.left, faceRectangle.top + faceRectangle.height, paint3);
+                }
+                i = i + 1;
             }
         }
         return bitmap;
+    }
+
+    private static void rotatePicture(Bitmap rotatedBitmap, Face[] faces) {
+
+
+        if (faces != null && faces.length == 0) {
+
+            Matrix matrix = new Matrix();
+
+            matrix.postRotate(90);
+
+
+            rotatedBitmap = Bitmap.createBitmap(rotatedBitmap, 0, 0, rotatedBitmap.getWidth(), rotatedBitmap.getHeight(), matrix, true);
+
+//                detectAndFrame(rotatedBitmap);
+
+            rotatePicture(rotatedBitmap, faces);
+
+
+        }
+
+        drawFaceRectanglesOnBitmap(rotatedBitmap, faces);
+
+
     }
 
 
